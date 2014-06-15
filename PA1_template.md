@@ -2,7 +2,8 @@
 
 
 ## Loading and preprocessing the data
-```{r, echo=T}
+
+```r
 setwd("/Users/ximi/Documents/coursera_datasci/RepData_PeerAssessment1")
 raw<-read.csv("activity.csv", 
               na.strings="NA",
@@ -12,30 +13,43 @@ data<-raw[complete,]
 ```
 
 ## What is mean total number of steps taken per day?
-```{r, echo=T}
+
+```r
 library(lattice)
 daytot<-aggregate(data$steps,list(data$date), sum)
 colnames(daytot)<-c("date","steps")
 xyplot(daytot$steps ~ daytot$date, type="h", xlab="date", ylab="total steps taken per day")
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+
+```r
 meantot<-mean(daytot$steps)
 mediantot<-median(daytot$steps)
 ```
 
-The mean and median total number of steps are `r meantot` and `r mediantot`, respectively.
+The mean and median total number of steps are 1.0766 &times; 10<sup>4</sup> and 1.0765 &times; 10<sup>4</sup>, respectively.
 
 ## What is the average daily activity pattern?
-```{r, echo=T}
+
+```r
 activity<- aggregate(data$steps, list(data$interval), mean)
 colnames(activity)<- c("interval", "steps")
 xyplot(activity$steps ~ activity$interval, xlab="interval", type="l", ylab="average steps taken across all days")
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+
+```r
 max_interval<- match(max(activity$steps), activity$steps)
 max_interval<- activity$interval[max_interval]
 ```
 
-The interval that contains the maximum number of steps is the one from `r max_interval -5` to `r max_interval`.
+The interval that contains the maximum number of steps is the one from 830 to 835.
 
 ## Imputing missing values
-```{r, echo=T}
+
+```r
 missing<-nrow(raw) - nrow(data)
 #filling data to NAs
 for(i in seq(nrow(raw))){
@@ -47,16 +61,21 @@ for(i in seq(nrow(raw))){
 daytot_new<- aggregate(raw$steps, list(raw$date), sum)
 colnames(daytot_new)<- c("date", "steps")
 xyplot(daytot_new$steps ~ daytot_new$date, type="h", xlab="date", ylab="total steps taken each day")
+```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+
+```r
 meantot_new<-mean(daytot_new$steps)
 mediantot_new<-median(daytot_new$steps)
 ```
 
-There are `r missing` missing cases. Filling the missing cases with averaged step across all days for that interval, a new dataset is created. The mean and median total number of steps are `r meantot_new` and `r mediantot_new`, respectively. Compared with the first part, which has mean and median as `r meantot` and `r mediantot`, the results do not differ very much.
+There are 2304 missing cases. Filling the missing cases with averaged step across all days for that interval, a new dataset is created. The mean and median total number of steps are 1.0766 &times; 10<sup>4</sup> and 1.0766 &times; 10<sup>4</sup>, respectively. Compared with the first part, which has mean and median as 1.0766 &times; 10<sup>4</sup> and 1.0765 &times; 10<sup>4</sup>, the results do not differ very much.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r, echo=T}
+
+```r
 days<- weekdays(raw$date)
 wkend<- c("Saturday", "Sunday")
 iswkday<- function(someday){
@@ -82,5 +101,6 @@ wkend$flag<- wkend_flag
 
 raw<-rbind(wk,wkend)
 xyplot(raw$steps ~ raw$interval | raw$flag, type="l", xlab="interval", ylab="number of steps", layout=c(1,2))
-
 ```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
